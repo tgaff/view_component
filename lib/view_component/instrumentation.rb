@@ -10,13 +10,22 @@ module ViewComponent # :nodoc:
 
     def render_in(view_context, &block)
       ActiveSupport::Notifications.instrument(
-        "render.view_component",
+        # Deprecated: "!render.view_component" is deprecated and this outer block can be removed in the next major version.
+        "!render.view_component",
         {
           name: self.class.name,
           identifier: self.class.identifier
         }
       ) do
-        super(view_context, &block)
+          ActiveSupport::Notifications.instrument(
+          "render.view_component",
+          {
+            name: self.class.name,
+            identifier: self.class.identifier
+          }
+        ) do
+          super(view_context, &block)
+        end
       end
     end
   end
